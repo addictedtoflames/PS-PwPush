@@ -1,4 +1,4 @@
-Function PwPush {
+Function Publish-Password {
 	<#
 	.SYNOPSIS
 		Generate PwPush link for a given password.
@@ -16,7 +16,7 @@ Function PwPush {
 	.PARAMETER DisableEarlyDeletion
 		Prevent anyone accessing the link from deleting the password before the scheduled expiration.
 	.EXAMPLE
-		PS> PwPush -Password password123 -Days 7 -Views 5 -DisableEarlyDeletion
+		PS> Publish-Password -Password password123 -Days 7 -Views 5 -DisableEarlyDeletion
 
 		Password  : password123
 		Days      : 7
@@ -26,7 +26,7 @@ Function PwPush {
 
 		This example creates a link for the password "password123", makes it available for 7 days or 5 views and prevents the user from deleting it early
 	.EXAMPLE
-		PS> -join ((33..126) * 20 | Get-Random -Count 32 | % {[char]$_}) | PwPush -Views 10
+		PS> -join ((33..126) * 20 | Get-Random -Count 32 | % {[char]$_}) | Publish-Password -Views 10
 
 		Password  : \t&#P$c`u~5Xgb9c`!V]w0,r>9O~nsA3
 		Days      : 7
@@ -110,3 +110,4 @@ Function PwPush {
 	}
 }
 
+New-Alias PwPush -Value Publish-Password
