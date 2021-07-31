@@ -26,7 +26,7 @@ Function Publish-Password {
 
 		This example creates a link for the password "password123", makes it available for 7 days or 5 views and prevents the user from deleting it early
 	.EXAMPLE
-		PS> -join ((33..126) * 20 | Get-Random -Count 32 | % {[char]$_}) | Publish-Password -Views 10
+		PS> New-Password -Character -Length 32 | Publish-Password -Views 10
 
 		Password  : \t&#P$c`u~5Xgb9c`!V]w0,r>9O~nsA3
 		Days      : 7
