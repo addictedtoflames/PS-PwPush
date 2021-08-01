@@ -10,8 +10,7 @@ Generate a random password either using random words (XKCD format) or a random c
 ### SYNTAX
     New-Password [-Character] [-Length <Byte>] [-Characters <String>] [<CommonParameters>]
     
-    New-Password -Word [-Words <Byte>] [-MinimumLength <Byte>] [-MaximumLength <Byte>] [-PrefixDigits <Int32>] [-SuffixDigits <Byte>] 
-    [-SeparatorCharacters <String>] [-PrefixSymbols <Byte>] [-SuffixSymbols <Byte>] [-PaddingSymbols <String>] [<CommonParameters>]
+    New-Password -Word [-Words <Byte>] [-MinimumLength <Byte>] [-MaximumLength <Byte>] [-PrefixDigits <Int32>] [-SuffixDigits <Byte>] [-SeparatorCharacters <String>] [-PrefixSymbols <Byte>] [-SuffixSymbols <Byte>] [-PaddingSymbols <String>] [<CommonParameters>]
     
     
 ### DESCRIPTION
@@ -58,7 +57,10 @@ Word formatted passwords support a custom number of words and optional padding d
     Number of random symbols at end of password.
     
 `-PaddingSymbols <String>`
-    Character set for padding symbols
+    Character set for padding symbols.
+
+`-Count`
+    Number of passwords to generate
     
 
 
