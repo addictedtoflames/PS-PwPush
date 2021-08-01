@@ -6,7 +6,7 @@ Function New-Password {
     <#
     .SYNOPSIS
         Generate a random password either using random words (XKCD format) or a random character string.
-    .DESCRIPTION
+    .DESCRIPTIOdavid@davidshomelab.comN
         Generate a random password using user-specified parameters. Supports either a random string or a word list.
         While characters are faster to generate they may be harder to remember so are best suited to service accounts
         or other systems where they are less likely to be entered manually. By default Character mode uses all alphanumeric
@@ -34,8 +34,9 @@ Function New-Password {
 
         #Character set to use when generating character passwords.
         [Parameter(ParameterSetName = "Character")]
-        [string]
-        $Characters = $LowerCase + $UpperCase + $Numbers + $Symbols,
+        [ValidateSet("Upper","Lower","Number","Symbol")]
+        [string[]]
+        $Characters = @("Upper","Lower","Number","Symbol"),
 
         # Generate a Word passphrase.
         [Parameter(Mandatory, ParameterSetName = "Word")]
@@ -107,13 +108,29 @@ Function New-Password {
             $AvailableWords += $Wordlist[$_]
         }
     }
+
+    if ($PSCmdlet.ParameterSetName -eq "Character"){
+        if ("Lower" -in $Characters){
+            $AvailableCharacters += $LowerCase
+        }
+        if ("Upper" -in $Characters){
+            $AvailableCharacters += $UpperCase
+        }
+        if ("Number" -in $Characters){
+            $AvailableCharacters += $Numbers
+        }
+        if ("Symbol" -in $Characters){
+            $AvailableCharacters += $Symbols
+        }
+    }
+
     (1..$Count) | ForEach-Object {
         if ($PSCmdlet.ParameterSetName -eq "Character") {
-            $CharacterCount = $Characters.Length
+            $CharacterCount = $AvailableCharacters.Length
             $Password = ""
             (1..$Length) | ForEach-Object {
                 $Random = Get-Random -Minimum 0 -Maximum $CharacterCount
-                $SelectedCharacter = $Characters[$Random]
+                $SelectedCharacter = $AvailableCharacters[$Random]
                 $Password += $SelectedCharacter
             }
             Write-Output $Password
