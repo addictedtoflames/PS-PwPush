@@ -1,3 +1,9 @@
+<!--
+ Copyright 2021 David Hollings. All rights reserved.
+ Use of this source code is governed by a BSD-style
+ license that can be found in the LICENSE file.
+-->
+
 <Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
   <Obj RefId="0">
     <TN RefId="0">

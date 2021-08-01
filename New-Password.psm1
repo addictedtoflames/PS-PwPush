@@ -1,3 +1,9 @@
+<##
+ # Copyright 2021 David Hollings. All rights reserved.
+ # Use of this source code is governed by a BSD-style
+ # license that can be found in the LICENSE file.
+#>
+
 Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
     . $_.FullName
 }
