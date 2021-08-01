@@ -28,7 +28,7 @@ Function Get-Entropy{
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(
         # Password to check
-        [Parameter()]
+        [Parameter(Mandatory)]
         [string]
         $Password,
 
@@ -38,42 +38,42 @@ Function Get-Entropy{
         $Word,
 
         # Length of word list in use
-        [Parameter(ParameterSetName = "Word")]
+        [Parameter(Mandatory, ParameterSetName = "Word")]
         [int32]
         $WordlistLength,
 
         # Number of Words
-        [Parameter(ParameterSetName = "Word")]
+        [Parameter(Mandatory, ParameterSetName = "Word")]
         [byte]
         $WordCount,
 
         # Prefix Symbols
-        [Parameter(ParameterSetName = "Word")]
+        [Parameter(Mandatory, ParameterSetName = "Word")]
         [byte]
         $PrefixSymbolCount,
 
         # Suffix Symbols
-        [Parameter(ParameterSetName = "Word")]
+        [Parameter(Mandatory, ParameterSetName = "Word")]
         [byte]
         $SuffixSymbolCount,
 
         # Number of padding symbols to choose from
-        [Parameter(ParameterSetName = "Word")]
+        [Parameter(Mandatory, ParameterSetName = "Word")]
         [byte]
         $SymbolSetSize,
 
         # Number of prefix digits
-        [Parameter(ParameterSetName = "Word")]
+        [Parameter(Mandatory, ParameterSetName = "Word")]
         [byte]
         $PrefixDigitCount,
 
         # Number of suffix digits
-        [Parameter(ParameterSetName = "Word")]
+        [Parameter(Mandatory, ParameterSetName = "Word")]
         [byte]
         $SuffixDigitCount,
 
         # Number of separator symbols
-        [Parameter(ParameterSetName= "Word")]
+        [Parameter(Mandatory, ParameterSetName= "Word")]
         [byte]
         $SeparatorCharacterCount
         
