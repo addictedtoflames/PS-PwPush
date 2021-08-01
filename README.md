@@ -21,43 +21,43 @@ Word formatted passwords support a custom number of words and optional padding d
     
 
 ### PARAMETERS
--Character [<SwitchParameter>]
+`-Character [<SwitchParameter>]`
     The format to use, Character or Word.
         
--Length <Byte>
+`-Length <Byte>`
     Number of characters to use in character password.
         
--Characters <String>
+`-Characters <String>`
     Character set to use when generating character passwords.
         
--Word [<SwitchParameter>]
+`-Word [<SwitchParameter>]`
     Generate a Word passphrase.
     
--Words <Byte>
+`-Words <Byte>`
     Number of words to use in Word password.
     
--MinimumLength <Byte>
+`-MinimumLength <Byte>`
     Minimum length of words to use in Word password.
     
--MaximumLength <Byte>
+`-MaximumLength <Byte>`
     Maximum length of words to use in password.
     
--PrefixDigits <Int32>
+`-PrefixDigits <Int32>`
     Number of digits at beginning of password.
     
--SuffixDigits <Byte>
+`-SuffixDigits <Byte>`
     Number of digits at end of password.
     
--SeparatorCharacters <String>
+`-SeparatorCharacters <String>`
     String of digits to be used as separator character. One character in the string will be chosen at random.
     
--PrefixSymbols <Byte>
+`-PrefixSymbols <Byte>`
     Number of random symbols at beginning of password.
     
--SuffixSymbols <Byte>
+`-SuffixSymbols <Byte>`
     Number of random symbols at end of password.
     
--PaddingSymbols <String>
+`-PaddingSymbols <String>`
     Character set for padding symbols
     
 
@@ -80,19 +80,19 @@ When multiple passwords are provided via pipeline input only the last is availab
     
 
 ### PARAMETERS
--Password <String>
+`-Password <String>`
     The password to be sent (Mandatory).
     
--Days <Int16>
+`-Days <Int16>`
     How long to make the password available for. Default: 7. Maximum: 90.
     
--Views <Int16>
+`-Views <Int16>`
     How many times the password can be viewed before the link is removed. Default: 5. Maximum 90.
     
--URI <StriLength <Byte>
+`-URI <StriLength <Byte>`
     URI for PwPush API. Default: https://pwpush.com/p.json
     
--DisableEarlyDeletion [<SwitchParameter>]
+`-DisableEarlyDeletion [<SwitchParameter>]`
     Prevent anyone accessing the link from deleting the password before the scheduled expiration.
         
 
