@@ -114,6 +114,9 @@ Function New-Password {
             $AvailableWords += $Wordlist[$_]
         }
         $WordlistLength = $AvailableWords.Length
+        if ($WordlistLength -le 100){
+            throw "Not enough available words, try setting less restrictive minimum and maximum lengths."
+        }
     }
 
     if ($PSCmdlet.ParameterSetName -eq "Character"){
