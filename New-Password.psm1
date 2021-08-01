@@ -1,12 +1,12 @@
-$LowerCase = "abcdefghijklmnopqrstuvwxyz"
-$UpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-$Numbers = "0123456789"
-$Symbols = "!`"$%^&*()-_=+{}[];'#:@~,./<>?\|``'"
+Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
+    . $_.FullName
+}
+
 Function New-Password {
     <#
     .SYNOPSIS
         Generate a random password either using random words (XKCD format) or a random character string.
-    .DESCRIPTIOdavid@davidshomelab.comN
+    .DESCRIPTION
         Generate a random password using user-specified parameters. Supports either a random string or a word list.
         While characters are faster to generate they may be harder to remember so are best suited to service accounts
         or other systems where they are less likely to be entered manually. By default Character mode uses all alphanumeric
@@ -17,7 +17,7 @@ Function New-Password {
     .INPUTS
         None
     .OUTPUTS
-        System.String
+        System.Management.Automation.PSCustomObject
     #>
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(
@@ -107,6 +107,7 @@ Function New-Password {
         ($MinimumLength..$MaximumLength) | ForEach-Object {
             $AvailableWords += $Wordlist[$_]
         }
+        $WordlistLength = $AvailableWords.Length
     }
 
     if ($PSCmdlet.ParameterSetName -eq "Character"){
@@ -133,7 +134,10 @@ Function New-Password {
                 $SelectedCharacter = $AvailableCharacters[$Random]
                 $Password += $SelectedCharacter
             }
-            Write-Output $Password
+
+            $EntropyParams = @{
+                Password = $Password
+            }
         }
 
 
@@ -190,8 +194,34 @@ Function New-Password {
             }
             else { $SeparatorCharacter = $SeparatorCharacters }
 
+
+            $Password = $PasswordWords -join $SeparatorCharacter
+
             # Print final password
-            Write-Output ($PasswordWords -join $SeparatorCharacter)
+            $EntropyParams = @{
+                Password =  $Password
+                Word = $true
+                WordListLength = $WordlistLength
+                WordCount = $Words
+                PrefixSymbolCount = $PrefixSymbols
+                SuffixSymbolCount = $SuffixSymbols
+                SymbolSetSize = $PaddingSymbols.Length
+                PrefixDigitCount = $PrefixDigits
+                SuffixDigitCount = $SuffixDigits
+                SeparatorCharacterCount = $SeparatorCharacters.length
+                Verbose = $true
+            }
+
+
         }
+        $Entropy = Get-Entropy @EntropyParams
+        $Output = [PSCustomObject]@{
+            Password = $Password
+            BlindEntropy = $Entropy.BlindEntropy
+            SeenEntropy = $Entropy.SeenEntropy
+        }
+
+        Write-Output $Output
+
     }
 }

@@ -43,7 +43,7 @@ Function Publish-Password {
 
 	Param(
 	    # Password to be sent
-	    [Parameter(mandatory, valuefrompipeline)]
+	    [Parameter(mandatory, valuefrompipeline, valuefrompipelinebypropertyname = "Password")]
 	    [string]
 	    $Password,
     
