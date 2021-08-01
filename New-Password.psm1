@@ -2,7 +2,7 @@ $LowerCase = "abcdefghijklmnopqrstuvwxyz"
 $UpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 $Numbers = "0123456789"
 $Symbols = "!`"$%^&*()-_=+{}[];'#:@~,./<>?\|``'"
-Function New-Password{
+Function New-Password {
     <#
     .SYNOPSIS
         Generate a random password either using random words (XKCD format) or a random character string.
@@ -28,7 +28,7 @@ Function New-Password{
 
         #Number of characters to use in character password.
         [Parameter(ParameterSetName = "Character")]
-        [ValidateRange(4,255)]
+        [ValidateRange(4, 255)]
         [byte]
         $Length = 20,
 
@@ -49,15 +49,15 @@ Function New-Password{
 
         #Minimum length of words to use in Word password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(4,15)]
+        [ValidateRange(4, 15)]
         [byte]
         $MinimumLength = 4,
 
         #Maximum length of words to use in password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateScript({
-            $_ -ge $MinimumLength -and $_ -le 15
-        })]
+        [ValidateScript( {
+                $_ -ge $MinimumLength -and $_ -le 15
+            })]
         [byte]
         $MaximumLength = 8,
 
@@ -89,82 +89,91 @@ Function New-Password{
         # Character set for padding symbols
         [Parameter(ParameterSetName = "Word")]
         [string]
-        $PaddingSymbols = $Symbols
+        $PaddingSymbols = $Symbols,
+
+        # How many passwords to generate
+        [Parameter()]
+        [byte]
+        $Count = 1
     )
 
-
-
-    if ($PSCmdlet.ParameterSetName -eq "Character"){
-        $CharacterCount = $Characters.Length
-        $Password = ""
-        (1..$Length) | ForEach-Object{
-            $Random = Get-Random -Minimum 0 -Maximum $CharacterCount
-            $SelectedCharacter = $Characters[$Random]
-            $Password += $SelectedCharacter
-        }
-            Write-Output $Password
-    }
-
-
-    else {
-        # Import WordList
+    if ($PSCmdlet.ParameterSetName -eq "Word") {
+        # Import WordList. In the event that count is greater than 1 and we want a Words type password,
+        # we import the dictionary outside the loop as it only needs to be done once
         $Wordlist = Import-Clixml $PSScriptRoot\words.xml
-        $AvailableWords = $Wordlist | Where-Object {
-            $_.Length -Ge $MinimumLength -and $_.Length -le $MaximumLength
+        $AvailableWords = New-Object -TypeName System.Collections.ArrayList
+        ($MinimumLength..$MaximumLength) | ForEach-Object {
+            $AvailableWords += $Wordlist[$_]
         }
-
-        # Initialise array to contain password components
-        [string[]]$PasswordWords = @()
-
-        # Generate prefix symbols
-        if ($PrefixSymbols -gt 0){
-            $PrefixSymbolCharacters
-            (1..$PrefixSymbols) | ForEach-Object{
-                $PrefixSymbolCharacters += $Symbols[(Get-Random -Minimum 0 -Maximum $Symbols.Length)]
+    }
+    (1..$Count) | ForEach-Object {
+        if ($PSCmdlet.ParameterSetName -eq "Character") {
+            $CharacterCount = $Characters.Length
+            $Password = ""
+            (1..$Length) | ForEach-Object {
+                $Random = Get-Random -Minimum 0 -Maximum $CharacterCount
+                $SelectedCharacter = $Characters[$Random]
+                $Password += $SelectedCharacter
             }
-            $PasswordWords += $PrefixSymbolCharacters
+            Write-Output $Password
         }
 
-        # Generate prefix digits
-        if ($PrefixDigits -gt 0){
-            $PrefixDigitValue = [int](Get-Random -Maximum ([Math]::Pow(10,$PrefixDigits)))
-            $PasswordWords += "{0:d$PrefixDigits}" -f $PrefixDigitValue # Formatting string ensures leading zeros are preserved
-        }
 
-        # Generate $Words random words and add them to oputput array. Word case is decided randomly
-        (1..$Words) | ForEach-Object{
-            [system.gc]::Collect()
-            $Random = Get-Random -Minimum 0 -Maximum $AvailableWords.Length
-            $SelectedWord = $AvailableWords[$Random].Word
-            if ((Get-Random -Minimum 0 -Maximum 2) -eq 1){
-                $SelectedWord = $SelectedWord.ToUpper()
+        else {
+
+            # Initialise array to contain password components
+            [string[]]$PasswordWords = @()
+
+            # Generate prefix symbols
+            if ($PrefixSymbols -gt 0) {
+                $PrefixSymbolCharacters
+                (1..$PrefixSymbols) | ForEach-Object {
+                    $PrefixSymbolCharacters += $Symbols[(Get-Random -Minimum 0 -Maximum $Symbols.Length)]
+                }
+                $PasswordWords += $PrefixSymbolCharacters
             }
-            $PasswordWords += $SelectedWord
-        }
 
-        # Generate suffix digits
-        if ($SuffixDigits -gt 0){
-            $SuffixDigitValue = [int](Get-Random -Maximum ([Math]::Pow(10,$SuffixDigits)))
-            $PasswordWords += "{0:d$SuffixDigits}" -f $SuffixDigitValue # Formatting string ensures leading zeros are preserved
-        }
-
-        # Generate suffix symbols
-        if ($SuffixSymbols -gt 0){
-            $SuffixSymbolCharacters
-            (1..$SuffixSymbols) | ForEach-Object{
-                $SuffixSymbolCharacters += $Symbols[(Get-Random -Minimum 0 -Maximum $Symbols.Length)]
+            # Generate prefix digits
+            if ($PrefixDigits -gt 0) {
+                $PrefixDigitValue = [int](Get-Random -Maximum ([Math]::Pow(10, $PrefixDigits)))
+                $PasswordWords += "{0:d$PrefixDigits}" -f $PrefixDigitValue # Formatting string ensures leading zeros are preserved
             }
-            $PasswordWords += $SuffixSymbolCharacters
-        }
 
-        # Choose separator character
-        if ($SeparatorCharacters.Length -gt 1){
-        $SeparatorIndex = Get-Random -Minimum 0 -Maximum ($SeparatorCharacters.Length)
-        $SeparatorCharacter = $SeparatorCharacters[$SeparatorIndex]
-        }
-        else {$SeparatorCharacter = $SeparatorCharacters}
+            # Generate $Words random words and add them to oputput array. Word case is decided randomly
+            (1..$Words) | ForEach-Object {
+                [system.gc]::Collect()
+                $Random = Get-Random -Minimum 0 -Maximum $AvailableWords.Length
+                $SelectedWord = $AvailableWords[$Random]
+                if ((Get-Random -Minimum 0 -Maximum 2) -eq 1) {
+                    $SelectedWord = $SelectedWord.ToUpper()
+                }
+                $PasswordWords += $SelectedWord
+            }
 
-        # Print final password
-        Write-Output ($PasswordWords -join $SeparatorCharacter)
+            # Generate suffix digits
+            if ($SuffixDigits -gt 0) {
+                $SuffixDigitValue = [int](Get-Random -Maximum ([Math]::Pow(10, $SuffixDigits)))
+                $PasswordWords += "{0:d$SuffixDigits}" -f $SuffixDigitValue # Formatting string ensures leading zeros are preserved
+            }
+
+            # Generate suffix symbols
+            if ($SuffixSymbols -gt 0) {
+                $SuffixSymbolCharacters
+                (1..$SuffixSymbols) | ForEach-Object {
+                    $SuffixSymbolCharacters += $Symbols[(Get-Random -Minimum 0 -Maximum $Symbols.Length)]
+                }
+                $PasswordWords += $SuffixSymbolCharacters
+            }
+
+            # Choose separator character
+            if ($SeparatorCharacters.Length -gt 1) {
+                $SeparatorIndex = Get-Random -Minimum 0 -Maximum ($SeparatorCharacters.Length)
+                $SeparatorCharacter = $SeparatorCharacters[$SeparatorIndex]
+            }
+            else { $SeparatorCharacter = $SeparatorCharacters }
+
+            # Print final password
+            Write-Output ($PasswordWords -join $SeparatorCharacter)
+        }
     }
 }

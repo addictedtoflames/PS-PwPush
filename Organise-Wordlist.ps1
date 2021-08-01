@@ -25,22 +25,26 @@ $MinimumLength = 4,
 $MaximumLength = 15
 
 )
-$wordlist = Get-Content $Dictionary
+$Wordlist = Get-Content $Dictionary
 
+$OrganisedDictionary = @{}
+($MinimumLength..$MaximumLength) | ForEach-Object{
+    $OrganisedDictionary[$_] = (New-Object -Type System.Collections.ArrayList)
+}
 
-$usableWords = $wordlist | ForEach-Object {
-    if ($_.Length -ge $MinimumLength -and $_.Length -le $MaximumLength){
-        [pscustomobject]@{
-            Word = $_
-            Length = $_.Length
-        }
+foreach ($Word in $Wordlist){
+    if ($Word.Length -ge $MinimumLength -and $Word.Length -le $MaximumLength){
+        $OrganisedDictionary[$Word.Length].Add($Word) | Out-Null
+        $ImportedWords ++
     }
 }
 
-$usableWords  | Sort-Object -Property Length | Export-Clixml -Path $PSScriptRoot\words.xml
+Write-Host "Imported $ImportedWords Words"
 
-Write-Host "Imported $($usableWords.length) Words"
+$OrganisedDictionary | Export-Clixml -Path words.xml
 
-Remove-Variable usableWords
-
+# this function will use a lot of memory, we make sure to clear the variables containing the dictionary and garbage collect
+#Remove-Variable usableWords
+Remove-Variable OrganisedDictionary
+Remove-Variable WordList
 [system.gc]::Collect()
