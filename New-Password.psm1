@@ -44,6 +44,7 @@ Function New-Password {
 
         #Number of words to use in Word password.
         [Parameter(ParameterSetName = "Word")]
+        [ValidateRange(1,256)]
         [byte]
         $Words = 4,
 
