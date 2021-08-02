@@ -8,28 +8,6 @@ Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
     . $_.FullName
 }
 
-Function StringContains {
-    param (
-        # String to validate
-        [Parameter(Mandatory)]
-        [string]
-        $String,
-
-        # Character set to look for in String
-        [Parameter(Mandatory)]
-        [string]
-        $Characters
-    )
-
-    foreach ($Character in $Characters.ToCharArray()) {
-        if ($String.IndexOf($Character) -ge 0){
-            return $true
-            break
-        }
-    }
-
-}
-
 Function Get-Entropy{
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(
@@ -115,9 +93,10 @@ Function Get-Entropy{
 
        $SeenPermutations = $WordPermutations * $CasePermutations * $PaddingPermutations * $DigitPermutations * $SeparatorPermutations
 
-       $SeenEntropy = [math]::round([math]::log2($SeenPermutations))
+       $ExactSeenEntropy = log2 -Number $SeenPermutations
 
-
+       $SeenEntropy = [math]::round($ExactSeenEntropy)
+        
     }
 
     if (StringContains -String $Password -Characters $LowerCase){
@@ -135,7 +114,9 @@ Function Get-Entropy{
 
     $BlindPermutations = [math]::pow($CharacterSet.Length,$Password.Length)
 
-    $BlindEntropy = [math]::round([math]::log2($BlindPermutations))
+    $ExactBlindEntropy = log2 -Number $BlindPermutations
+
+    $BlindEntropy = [math]::round($ExactBlindEntropy)
 
     if (!($SeenEntropy)){
         # If not using a word format the seen entropy will be the same as blind entropy
