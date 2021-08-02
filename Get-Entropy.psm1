@@ -68,29 +68,29 @@ Function Get-Entropy{
     if ($PSCmdlet.ParameterSetName -eq "Word"){
        # Words
        $WordPermutations =  [math]::Pow($WordlistLength,$WordCount)
-       Write-Debug "Word Permutations: $WordPermutations"
+       Write-Verbose "Word Permutations: $WordPermutations"
 
        # Cases
 
        $CasePermutations = [math]::Pow(2,$WordCount)
-       Write-Debug "Case Permutations: $CasePermutations"
+       Write-Verbose "Case Permutations: $CasePermutations"
 
        # Padding Characters
 
        $PaddingPermutations = ([math]::Pow($SymbolSetSize,($PrefixSymbolCount + $SuffixSymbolCount)))
-       Write-Debug "Padding Permutations: $PaddingPermutations"
+       Write-Verbose "Padding Permutations: $PaddingPermutations"
 
        # Digits
 
        $DigitPermutations = [math]::Pow(10,($PrefixDigitCount + $SuffixDigitCount))
-       Write-Debug "Digit Permutations: $DigitPermutations"
+       Write-Verbose "Digit Permutations: $DigitPermutations"
 
        # Separator Character
 
        if ($SeparatorCharacterCount -eq 0) { $SeparatorCharacterCount ++}
 
        $SeparatorPermutations = $SeparatorCharacterCount
-       Write-Debug "Separator Permutations: $SeparatorPermutations"
+       Write-Verbose "Separator Permutations: $SeparatorPermutations"
 
        $SeenPermutations = $WordPermutations * $CasePermutations * $PaddingPermutations * $DigitPermutations * $SeparatorPermutations
 

@@ -216,7 +216,6 @@ Function New-Password {
                 PrefixDigitCount = $PrefixDigits
                 SuffixDigitCount = $SuffixDigits
                 SeparatorCharacterCount = $SeparatorCharacters.length
-                Verbose = $true
             }
 
 
