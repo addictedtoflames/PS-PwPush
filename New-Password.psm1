@@ -4,6 +4,7 @@
  # license that can be found in the LICENSE file.
 #>
 
+#Import Helper Scripts
 Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
     . $_.FullName
 }
