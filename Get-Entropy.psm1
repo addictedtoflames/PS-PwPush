@@ -93,9 +93,7 @@ Function Get-Entropy{
 
        $SeenPermutations = $WordPermutations * $CasePermutations * $PaddingPermutations * $DigitPermutations * $SeparatorPermutations
 
-       $ExactSeenEntropy = log2 -Number $SeenPermutations
-
-       $SeenEntropy = [math]::round($ExactSeenEntropy)
+       $SeenEntropy = [math]::round([math]::log($SeenPermutations,2))
         
     }
 
@@ -114,9 +112,7 @@ Function Get-Entropy{
 
     $BlindPermutations = [math]::pow($CharacterSet.Length,$Password.Length)
 
-    $ExactBlindEntropy = log2 -Number $BlindPermutations
-
-    $BlindEntropy = [math]::round($ExactBlindEntropy)
+    $BlindEntropy = [math]::round([math]::log($BlindPermutations,2))
 
     if (!($SeenEntropy)){
         # If not using a word format the seen entropy will be the same as blind entropy

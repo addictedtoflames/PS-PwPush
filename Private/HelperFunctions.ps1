@@ -3,16 +3,6 @@
  # Use of this source code is governed by a BSD-style
  # license that can be found in the LICENSE file.
 #>
-Function log2 {
-    [CmdletBinding()]
-    param (
-        [Parameter()]
-        [double]
-        $Number
-    )
-    $Result = [math]::Log10($Number)/[math]::Log10(2)
-    Write-Output $Result
-}
 Function StringContains {
     <#
     .SYNOPSIS
