@@ -47,6 +47,7 @@ Function Publish-Password {
 		System.Management.Automation.PSCustomObject
 	#>
 
+	[CmdletBinding()]
 	Param(
 	    # Password to be sent
 	    [Parameter(mandatory, valuefrompipeline, valuefrompipelinebypropertyname = "Password")]

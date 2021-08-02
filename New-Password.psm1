@@ -4,6 +4,7 @@
  # license that can be found in the LICENSE file.
 #>
 
+#Import Helper Scripts
 Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
     . $_.FullName
 }
@@ -218,7 +219,6 @@ Function New-Password {
                 PrefixDigitCount = $PrefixDigits
                 SuffixDigitCount = $SuffixDigits
                 SeparatorCharacterCount = $SeparatorCharacters.length
-                Verbose = $true
             }
 
 

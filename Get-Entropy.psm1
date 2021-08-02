@@ -4,30 +4,9 @@
  # license that can be found in the LICENSE file.
 #>
 
+# Import helper scripts
 Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
     . $_.FullName
-}
-
-Function StringContains {
-    param (
-        # String to validate
-        [Parameter(Mandatory)]
-        [string]
-        $String,
-
-        # Character set to look for in String
-        [Parameter(Mandatory)]
-        [string]
-        $Characters
-    )
-
-    foreach ($Character in $Characters.ToCharArray()) {
-        if ($String.IndexOf($Character) -ge 0){
-            return $true
-            break
-        }
-    }
-
 }
 
 Function Get-Entropy{
@@ -89,35 +68,34 @@ Function Get-Entropy{
     if ($PSCmdlet.ParameterSetName -eq "Word"){
        # Words
        $WordPermutations =  [math]::Pow($WordlistLength,$WordCount)
-       Write-Debug "Word Permutations: $WordPermutations"
+       Write-Verbose "Word Permutations: $WordPermutations"
 
        # Cases
 
        $CasePermutations = [math]::Pow(2,$WordCount)
-       Write-Debug "Case Permutations: $CasePermutations"
+       Write-Verbose "Case Permutations: $CasePermutations"
 
        # Padding Characters
 
        $PaddingPermutations = ([math]::Pow($SymbolSetSize,($PrefixSymbolCount + $SuffixSymbolCount)))
-       Write-Debug "Padding Permutations: $PaddingPermutations"
+       Write-Verbose "Padding Permutations: $PaddingPermutations"
 
        # Digits
 
        $DigitPermutations = [math]::Pow(10,($PrefixDigitCount + $SuffixDigitCount))
-       Write-Debug "Digit Permutations: $DigitPermutations"
+       Write-Verbose "Digit Permutations: $DigitPermutations"
 
        # Separator Character
 
        if ($SeparatorCharacterCount -eq 0) { $SeparatorCharacterCount ++}
 
        $SeparatorPermutations = $SeparatorCharacterCount
-       Write-Debug "Separator Permutations: $SeparatorPermutations"
+       Write-Verbose "Separator Permutations: $SeparatorPermutations"
 
        $SeenPermutations = $WordPermutations * $CasePermutations * $PaddingPermutations * $DigitPermutations * $SeparatorPermutations
 
-       $SeenEntropy = [math]::round([math]::log2($SeenPermutations))
-
-
+       $SeenEntropy = [math]::round([math]::log($SeenPermutations,2))
+        
     }
 
     if (StringContains -String $Password -Characters $LowerCase){
@@ -135,7 +113,7 @@ Function Get-Entropy{
 
     $BlindPermutations = [math]::pow($CharacterSet.Length,$Password.Length)
 
-    $BlindEntropy = [math]::round([math]::log2($BlindPermutations))
+    $BlindEntropy = [math]::round([math]::log($BlindPermutations,2))
 
     if (!($SeenEntropy)){
         # If not using a word format the seen entropy will be the same as blind entropy
