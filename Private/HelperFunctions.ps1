@@ -1,0 +1,44 @@
+<##
+ # Copyright 2021 David Hollings. All rights reserved.
+ # Use of this source code is governed by a BSD-style
+ # license that can be found in the LICENSE file.
+#>
+Function log2 {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [double]
+        $Number
+    )
+    $Result = [math]::Log10($Number)/[math]::Log10(2)
+    Write-Output $Result
+}
+Function StringContains {
+    <#
+    .SYNOPSIS
+        Input 2 strings and return true if any of the characters in the second string appear in the first string
+    .DESCRIPTION
+        This function is used to check if any
+    #>
+    param (
+        # String to validate
+        [Parameter(Mandatory)]
+        [string]
+        $String,
+
+        # Character set to look for in String
+        [Parameter(Mandatory)]
+        [string]
+        $Characters
+    )
+
+    foreach ($Character in $Characters.ToCharArray()) {
+        if ($String.IndexOf($Character) -ge 0){
+            return $true
+            break
+        }
+    }
+
+    return $false
+
+}
