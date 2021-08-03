@@ -87,7 +87,7 @@ Function New-Password {
         #Number of characters to use in character password.
         [Parameter(ParameterSetName = "Character")]
         [ValidateRange(4, 255)]
-        [byte]
+        [int]
         $Length = 20,
 
         #Character set to use when generating character passwords.
@@ -103,14 +103,14 @@ Function New-Password {
 
         #Number of words to use in Word password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(1,256)]
-        [byte]
+        [ValidateRange(1,255)]
+        [int]
         $Words = 4,
 
         #Minimum length of words to use in Word password.
         [Parameter(ParameterSetName = "Word")]
         [ValidateRange(4, 15)]
-        [byte]
+        [int]
         $MinimumLength = 4,
 
         #Maximum length of words to use in password.
@@ -118,17 +118,19 @@ Function New-Password {
         [ValidateScript( {
                 $_ -ge $MinimumLength -and $_ -le 15
             })]
-        [byte]
+        [int]
         $MaximumLength = 8,
 
         # Number of digits at beginning of password.
         [Parameter(ParameterSetName = "Word")]
+        [ValidateRange(0,19)]
         [int]
         $PrefixDigits = 0,
 
         # Number of digits at end of password.
         [Parameter(ParameterSetName = "Word")]
-        [byte]
+        [ValidateRange(0,19)]
+        [int]
         $SuffixDigits = 0,
         
         # String of characters to be used as separator character. One character in the string will be chosen at random.
@@ -138,12 +140,14 @@ Function New-Password {
 
         # Number of random symbols at beginning of password.
         [Parameter(ParameterSetName = "Word")]
-        [byte]
+        [ValidateRange(0,100)]
+        [int]
         $PrefixSymbols = 0,
 
         # Number of random symbols at end of password.
         [Parameter(ParameterSetName = "Word")]
-        [byte]
+        [ValidateRange(0,100)]
+        [int]
         $SuffixSymbols = 0,
 
         # Character set for padding symbols
@@ -153,7 +157,7 @@ Function New-Password {
 
         # How many passwords to generate
         [Parameter()]
-        [byte]
+        [int]
         $Count = 1
     )
 
@@ -184,7 +188,8 @@ Function New-Password {
         $AvailableWords = New-Object -TypeName System.Collections.ArrayList
         for ($CurrentWordLength = $MinimumLength ; $CurrentWordLength -le $MaximumLength; $CurrentWordLength ++){
             Write-Verbose "Importing words of length $CurrentWordLength"
-            $AvailableWords += $Wordlist[$CurrentWordLength]
+            Write-Debug "$($Wordlist[$CurrentWordLength])"
+            $AvailableWords += $Wordlist[$CurrentWordLength] 
         }
         $WordlistLength = $AvailableWords.Length
         Write-Verbose "Found $WordlistLength available words"
@@ -240,7 +245,7 @@ Function New-Password {
 
             # Generate prefix digits
             if ($PrefixDigits -gt 0) {
-                $PrefixDigitValue = [int](Get-Random -Maximum ([Math]::Pow(10, $PrefixDigits)))
+                $PrefixDigitValue = [int64](Get-Random -Maximum ([Math]::Pow(10, $PrefixDigits)))
                 $PasswordWords += "{0:d$PrefixDigits}" -f $PrefixDigitValue # Formatting string ensures leading zeros are preserved
             }
 
@@ -257,7 +262,7 @@ Function New-Password {
 
             # Generate suffix digits
             if ($SuffixDigits -gt 0) {
-                $SuffixDigitValue = [int](Get-Random -Maximum ([Math]::Pow(10, $SuffixDigits)))
+                $SuffixDigitValue = [int64](Get-Random -Maximum ([Math]::Pow(10, $SuffixDigits)))
                 $PasswordWords += "{0:d$SuffixDigits}" -f $SuffixDigitValue # Formatting string ensures leading zeros are preserved
             }
 
