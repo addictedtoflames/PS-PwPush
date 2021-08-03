@@ -18,9 +18,8 @@ Function New-Password {
         While characters are faster to generate they may be harder to remember so are best suited to service accounts
         or other systems where they are less likely to be entered manually. By default Character mode uses all alphanumeric
         characters and punctuation but can be customised.
-        Word formatted passwords support a custom number of words and optional padding digits at the beginning and end. Word
-        case is randomised to increase entropy. There will not be an option to customise word case.
-        The word list cannot be specified at the command line but new wordlists can be imported using the Organise-Wordlist.ps1 script
+        Word formatted passwords support a custom number of words and optional padding digits at the beginning and end. Word case is randomised to increase entropy. There will not be an option to customise word case.
+        The word list cannot be specified at the command line but new wordlists can be imported using the Import-PSPwUtilsWordList cmdlet.
     .INPUTS
         None
     .OUTPUTS
@@ -106,15 +105,37 @@ Function New-Password {
         $Count = 1
     )
 
+    Write-Verbose "Generating $Count Passwords"
+    Write-Verbose "Method: $($PSCmdlet.ParameterSetName)"
+    if ($PSCmdlet.ParameterSetName -eq "Character"){
+        Write-Verbose "Character Count: $Length"
+        Write-Verbose "Permitted Character Categories: $Characters"
+
+    }
+    if ($PSCmdlet.ParameterSetName -eq "Word") {
+        Write-Verbose "Words: $Words"
+        Write-Verbose "Minumum Length: $MinimumLength"
+        Write-Verbose "Maximum Length: $MaximumLength"
+        Write-Verbose "Prefix Digits: $PrefixDigits"
+        Write-Verbose "Suffix Digits: $SuffixDigits"
+        Write-Verbose "Prefix Symbol Count: $PrefixSymbols"
+        Write-Verbose "Suffix Symbol Count: $SuffixSymbols"
+        Write-Verbose "Padding Symbol Characters: $PaddingSymbols"
+        Write-Verbose "Separator Symbol Characters: $SeparatorCharacters"
+        
+    }
+
     if ($PSCmdlet.ParameterSetName -eq "Word") {
         # Import WordList. In the event that count is greater than 1 and we want a Words type password,
         # we import the dictionary outside the loop as it only needs to be done once
         $Wordlist = Import-Clixml $PSScriptRoot\words.xml
         $AvailableWords = New-Object -TypeName System.Collections.ArrayList
-        ($MinimumLength..$MaximumLength) | ForEach-Object {
-            $AvailableWords += $Wordlist[$_]
+        for ($CurrentWordLength = $MinimumLength ; $CurrentWordLength -le $MaximumLength; $CurrentWordLength ++){
+            Write-Verbose "Importing words of length $CurrentWordLength"
+            $AvailableWords += $Wordlist[$CurrentWordLength]
         }
         $WordlistLength = $AvailableWords.Length
+        Write-Verbose "Found $WordlistLength available words"
         if ($WordlistLength -le 100){
             throw "Not enough available words, try setting less restrictive minimum and maximum lengths."
         }
