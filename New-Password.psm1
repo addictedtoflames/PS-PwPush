@@ -27,7 +27,7 @@ Function New-Password {
     #>
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(
-        # Generate a Character password (Default)
+        # Generate a Character password (Default).
         [Parameter(ParameterSetName = "Character")]
         [switch]
         $Character,
@@ -79,7 +79,7 @@ Function New-Password {
         [byte]
         $SuffixDigits = 0,
         
-        # String of digits to be used as separator character. One character in the string will be chosen at random.
+        # String of characters to be used as separator character. One character in the string will be chosen at random.
         [Parameter(ParameterSetName = "Word")]
         [string]
         $SeparatorCharacters = $Symbols,
