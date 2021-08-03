@@ -24,6 +24,55 @@ Function New-Password {
         None
     .OUTPUTS
         System.Management.Automation.PSCustomObject
+    .EXAMPLE
+        PS> New-Password -Length 30 -Characters Lower,Upper,Number
+
+        Password                       BlindEntropy SeenEntropy
+        --------                       ------------ -----------
+        X3EP14IvBHwPjTWqC5wJsYwDFSaDYL          179         179
+
+        Generates a 30 digit random password using lower and upper case letters and numbers
+
+    .EXAMPLE
+        PS> New-Password -Word
+
+        Password                          BlindEntropy SeenEntropy
+        --------                          ------------ -----------
+        PURGING?spirits?maternal?DIVINITY          211          59
+
+        Generates a new words type passphrase using default parameters
+
+    .EXAMPLE
+        PS> New-Password -Words 5 -PrefixDigits 1 -SuffixDigits 3 -PrefixSymbols 2 -SuffixSymbols 1 -SeparatorCharacters "_"
+
+        Password                                              BlindEntropy SeenEntropy
+        --------                                              ------------ -----------
+        &[_3_CRAFTER_conclude_DEFERRAL_SCRUFFY_EXPORTER_887_=          347          96
+
+        Generate a 5 word password with 2 prefix symbols, 1 suffix symbol, 1 prefix digt and 3 suffix digits. Words are separated by underscores
+
+    .EXAMPLE
+        PS> New-Password -MinimumLength 6 -MaximumLength 9 -Count 4 -SeparatorCharacters "-_=+/\"
+
+        Password                             BlindEntropy SeenEntropy
+        --------                             ------------ -----------
+        coronary+AVERAGE+endurable+COLONIZE           224          56
+        MOUSINESS\married\atrocious\smelting          230          56
+        unsavory=THROWBACK=HARMONY=corporal           224          56
+        ANOTHER/RIMLESS/UNCOATED/CAREFULLY            199          56
+
+        Generate 4 passphrases using words containg between 6 and 9 letters. Separator character is randomly chosen from -, _, =, +, / and \
+
+    .EXAMPLE
+        PS> New-Password | Publish-Password
+
+        Password  : Mr?)wrP8+>JoC&YdZ&<e
+        Days      : 7
+        Views     : 5
+        Deletable : True
+        Link      : https://pwpush.com/p/s0cbre91fkkjz6oo
+
+        Generate a random password and create a sharable link using PwPush
     #>
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(
