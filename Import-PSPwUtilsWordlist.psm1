@@ -9,11 +9,13 @@ function Import-PSPwUtilsWordList {
 .SYNOPSIS
     Imports wordlists and organise by length
 .DESCRIPTION
-    Wordlists must be organised to speed up processing, this script accepts a word list with one word per line and organises it as a PowerShell array ordered by length. Wordlists must be submitted as a plain text file with 1 word per line.
+    Wordlists must be organised to speed up processing, this script accepts a word list and organises it as a PowerShell array ordered by length. Wordlists must be submitted as a plain text file with 1 word per line. Running this command will overwrite the current wordlist.
 .INPUTS
     None
 .OUTPUTS
     None
+.LINK
+    https://github.com/davidshomelab/PS-PwUtils
 #>
     [CmdletBinding()]
     param (

@@ -73,6 +73,9 @@ Function New-Password {
         Link      : https://pwpush.com/p/s0cbre91fkkjz6oo
 
         Generate a random password and create a sharable link using PwPush
+
+    .LINK
+        https://github.com/davidshomelab/PS-PwUtils
     #>
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(

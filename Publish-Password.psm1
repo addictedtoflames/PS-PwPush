@@ -45,6 +45,9 @@ Function Publish-Password {
 		System.String
 	.OUTPUTS
 		System.Management.Automation.PSCustomObject
+
+	.LINK
+        https://github.com/davidshomelab/PS-PwUtils
 	#>
 
 	[CmdletBinding()]
