@@ -27,7 +27,7 @@ Function New-Password {
     #>
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(
-        #The format to use, Character or Word.
+        # Generate a Character password (Default)
         [Parameter(ParameterSetName = "Character")]
         [switch]
         $Character,
@@ -45,7 +45,7 @@ Function New-Password {
         $Characters = @("Upper","Lower","Number","Symbol"),
 
         # Generate a Word passphrase.
-        [Parameter(Mandatory, ParameterSetName = "Word")]
+        [Parameter(ParameterSetName = "Word")]
         [switch]
         $Word,
 
