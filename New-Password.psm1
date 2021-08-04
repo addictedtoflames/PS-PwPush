@@ -223,12 +223,12 @@ Function New-Password {
                 $Password += $SelectedCharacter
             }
 
-            $EntropyParams = @{
-                Password = $Password
-            }
+            $EntropyParams = @{} # We will add parameters to this array later but for now just need to ensure it exists
+
         }
 
 
+        # Word password
         else {
 
             # Initialise array to contain password components
@@ -273,11 +273,9 @@ Function New-Password {
             else { $SeparatorCharacter = $SeparatorCharacters }
 
 
-            $Password = $PasswordWords -join $SeparatorCharacter
 
             # Print final password
             $EntropyParams = @{
-                Password =  $Password
                 Word = $true
                 WordListLength = $WordlistLength
                 WordCount = $Words
@@ -289,8 +287,16 @@ Function New-Password {
                 SeparatorCharacterCount = $SeparatorCharacters.length
             }
 
+            $Password = $PasswordWords -join $SeparatorCharacter
 
         }
+
+        # Convert password to secure string to pass to GetEntropy
+        $SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
+
+        #Add password to EntropyParams. We do this here because both string and word format passwords use this field
+        $EntropyParams.Password = $SecurePassword
+
         $Entropy = GetEntropy @EntropyParams
         $Output = [PSCustomObject]@{
             Password = $Password

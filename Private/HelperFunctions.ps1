@@ -33,7 +33,7 @@ Function StringContains {
 
 }
 
-function GenerateCharstring {
+function GenerateCharString {
     [CmdletBinding()]
     param (
         # Number of characters

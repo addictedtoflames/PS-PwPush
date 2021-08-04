@@ -97,22 +97,27 @@ Function GetEntropy{
         
     }
 
-    if (StringContains -String $Password -Characters $LowerCase){
+    $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
+    $PasswordPlain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+
+    if (StringContains -String $PasswordPlain -Characters $LowerCase){
         $CharacterSet += $LowerCase
     }
-    if (StringContains -String $Password -Characters $UpperCase){
+    if (StringContains -String $PasswordPlain -Characters $UpperCase){
         $CharacterSet += $UpperCase
     }
-    if (StringContains -String $Password -Characters $Numbers){
+    if (StringContains -String $PasswordPlain -Characters $Numbers){
         $CharacterSet += $Numbers
     }
-    if (StringContains -String $Password -Characters $Symbols){
+    if (StringContains -String $PasswordPlain -Characters $Symbols){
         $CharacterSet += $Symbols
     }
 
-    $BlindPermutations = [math]::pow($CharacterSet.Length,$Password.Length)
+    $BlindPermutations = [math]::pow($CharacterSet.Length,$PasswordPlain.Length)
 
     $BlindEntropy = [math]::round([math]::log($BlindPermutations,2))
+
+    Remove-Variable -Name PasswordPlain
 
     if (!($SeenEntropy)){
         # If not using a word format the seen entropy will be the same as blind entropy
