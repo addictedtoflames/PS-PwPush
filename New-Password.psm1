@@ -235,18 +235,13 @@ Function New-Password {
             [string[]]$PasswordWords = @()
 
             # Generate prefix symbols
-            if ($PrefixSymbols -gt 0) {
-                $PrefixSymbolCharacters
-                (1..$PrefixSymbols) | ForEach-Object {
-                    $PrefixSymbolCharacters += $Symbols[(Get-Random -Minimum 0 -Maximum $Symbols.Length)]
-                }
-                $PasswordWords += $PrefixSymbolCharacters
+            if ($PrefixSymbols -gt 0){
+                $PasswordWords += GenerateCharstring -Length $PrefixSymbols -Charset $Symbols
             }
 
             # Generate prefix digits
-            if ($PrefixDigits -gt 0) {
-                $PrefixDigitValue = [int64](Get-Random -Maximum ([Math]::Pow(10, $PrefixDigits)))
-                $PasswordWords += "{0:d$PrefixDigits}" -f $PrefixDigitValue # Formatting string ensures leading zeros are preserved
+            if ($PrefixDigits -gt 0){
+                $PasswordWords += GenerateCharstring -Length $PrefixDigits -Charset $Numbers
             }
 
             # Generate $Words random words and add them to oputput array. Word case is decided randomly
@@ -261,18 +256,13 @@ Function New-Password {
             }
 
             # Generate suffix digits
-            if ($SuffixDigits -gt 0) {
-                $SuffixDigitValue = [int64](Get-Random -Maximum ([Math]::Pow(10, $SuffixDigits)))
-                $PasswordWords += "{0:d$SuffixDigits}" -f $SuffixDigitValue # Formatting string ensures leading zeros are preserved
+            if ($SuffixDigits -gt 0){
+                $PasswordWords += GenerateCharstring -Length $SuffixDigits -Charset $Numbers
             }
 
             # Generate suffix symbols
-            if ($SuffixSymbols -gt 0) {
-                $SuffixSymbolCharacters
-                (1..$SuffixSymbols) | ForEach-Object {
-                    $SuffixSymbolCharacters += $Symbols[(Get-Random -Minimum 0 -Maximum $Symbols.Length)]
-                }
-                $PasswordWords += $SuffixSymbolCharacters
+            if ($SuffixSymbols -gt 0){
+                $PasswordWords += GenerateCharstring -Length $SuffixSymbols -Charset $Symbols
             }
 
             # Choose separator character
@@ -301,7 +291,7 @@ Function New-Password {
 
 
         }
-        $Entropy = Get-Entropy @EntropyParams
+        $Entropy = GetEntropy @EntropyParams
         $Output = [PSCustomObject]@{
             Password = $Password
             BlindEntropy = $Entropy.BlindEntropy

@@ -32,3 +32,25 @@ Function StringContains {
     return $false
 
 }
+
+function GenerateCharstring {
+    [CmdletBinding()]
+    param (
+        # Number of characters
+        [Parameter(Mandatory)]
+        [int]
+        $Length,
+        
+        # Character set to use
+        [Parameter(Mandatory)]
+        [string]
+        $Charset
+    )
+
+
+    for ($i = 0; $i -lt $Length; $i ++){
+        $output += $Charset[(Get-Random -Minimum 0 -Maximum $Charset.Length)]
+    }
+
+    return $output
+}

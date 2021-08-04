@@ -5,16 +5,15 @@
 #>
 
 # Import helper scripts
-Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
-    . $_.FullName
-}
+. $PSScriptRoot/HelperFunctions.ps1
+. $PSScriptRoot/vars.ps1
 
-Function Get-Entropy{
+Function GetEntropy{
     [CmdletBinding(DefaultParameterSetName = "Character")]
     param(
         # Password to check
         [Parameter(Mandatory)]
-        [string]
+        [securestring]
         $Password,
 
         # Is it a word password? Will return seen entropy as well as blind if true
