@@ -97,6 +97,7 @@ Function GetEntropy{
         
     }
 
+    # Unpack secure string to read password
     $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
     $PasswordPlain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
 
@@ -117,7 +118,9 @@ Function GetEntropy{
 
     $BlindEntropy = [math]::round([math]::log($BlindPermutations,2))
 
+    # Remove plain password variable
     Remove-Variable -Name PasswordPlain
+    [System.GC]::Collect()
 
     if (!($SeenEntropy)){
         # If not using a word format the seen entropy will be the same as blind entropy
