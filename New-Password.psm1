@@ -103,7 +103,7 @@ Function New-Password {
 
         #Number of words to use in Word password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(1,255)]
+        [ValidateRange(0,14)]
         [int]
         $Words = 4,
 
@@ -119,17 +119,17 @@ Function New-Password {
                 $_ -ge $MinimumLength -and $_ -le 15
             })]
         [int]
-        $MaximumLength = 8,
+        $MaximumLength = 15,
 
         # Number of digits at beginning of password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(0,19)]
+        [ValidateRange(0,10)]
         [int]
         $PrefixDigits = 0,
 
         # Number of digits at end of password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(0,19)]
+        [ValidateRange(0,10)]
         [int]
         $SuffixDigits = 0,
         
@@ -140,13 +140,13 @@ Function New-Password {
 
         # Number of random symbols at beginning of password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(0,100)]
+        [ValidateRange(0,10)]
         [int]
         $PrefixSymbols = 0,
 
         # Number of random symbols at end of password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(0,100)]
+        [ValidateRange(0,10)]
         [int]
         $SuffixSymbols = 0,
 
