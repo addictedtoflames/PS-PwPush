@@ -246,7 +246,6 @@ Function New-Password {
 
             # Generate $Words random words and add them to oputput array. Word case is decided randomly
             (1..$Words) | ForEach-Object {
-                [system.gc]::Collect()
                 $Random = Get-Random -Minimum 0 -Maximum $AvailableWords.Length
                 $SelectedWord = $AvailableWords[$Random]
                 if ((Get-Random -Minimum 0 -Maximum 2) -eq 1) {
