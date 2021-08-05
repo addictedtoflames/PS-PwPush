@@ -49,12 +49,11 @@ function Import-PSPwUtilsWordList {
         }
     }
 
-    Write-Host "Imported $ImportedWords Words"
+    Write-Verbose "Imported $ImportedWords Words"
 
     $OrganisedDictionary | Export-Clixml -Path $PSScriptRoot\words.xml
 
     # this function will use a lot of memory, we make sure to clear the variables containing the dictionary and garbage collect
-    #Remove-Variable usableWords
     Remove-Variable OrganisedDictionary
     Remove-Variable WordList
     [system.gc]::Collect()
