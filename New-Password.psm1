@@ -5,9 +5,8 @@
 #>
 
 #Import Helper Scripts
-Get-ChildItem $PSScriptRoot/Private/*.ps1 | ForEach-Object{
-    . $_.FullName
-}
+. $PSScriptRoot/Private/vars.ps1
+. $PSScriptRoot/Private/GetEntropy.ps1
 
 Function New-Password {
     <#
@@ -103,7 +102,7 @@ Function New-Password {
 
         #Number of words to use in Word password.
         [Parameter(ParameterSetName = "Word")]
-        [ValidateRange(0,14)]
+        [ValidateRange(1,14)]
         [int]
         $Words = 4,
 
