@@ -69,7 +69,7 @@ Function Publish-Password {
 
 	    [ValidateScript ({
 		    $UriStructure = [uri]$_
-		    $UriStructure.Scheme -eq "HTTPS" #-and (Test-NetConnection -ComputerName $UriStructure.IdnHost -Port $UriStructure.Port).TcpTestSucceeded
+		    $UriStructure.Scheme -eq "HTTPS"
 	    })]
 	    [string]
 	    $URI = 'https://pwpush.com/p.json',
