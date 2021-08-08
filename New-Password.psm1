@@ -107,12 +107,14 @@ Function New-Password {
         $Words = 4,
 
         #Minimum length of words to use in Word password.
+        [Alias("MinLength")]
         [Parameter(ParameterSetName = "Word")]
         [ValidateRange(4, 15)]
         [int]
         $MinimumLength = 4,
 
         #Maximum length of words to use in password.
+        [Alias("MaxLength")]
         [Parameter(ParameterSetName = "Word")]
         [ValidateScript( {
                 $_ -ge $MinimumLength -and $_ -le 15
