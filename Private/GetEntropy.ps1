@@ -97,9 +97,17 @@ Function GetEntropy{
         
     }
 
-    # Unpack secure string to read password
-    $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
-    $PasswordPlain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+    # Unpack secure string to read password. If we are using Windows Powershell we need to use the BSTR method but this doesn't work on Linux
+    # so for modern versions we use ConvertFrom-SecureString
+    if ($PSVersionTable.PSVersion -lt 7){
+        $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
+        $PasswordPlain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+    }
+    else{
+        $PasswordPlain = ConvertFrom-SecureString $Password -AsPlainText
+    }
+
+    Write-Output $PasswordPlain
 
     if (StringContains -String $PasswordPlain -Characters $LowerCase){
         $CharacterSet += $LowerCase
