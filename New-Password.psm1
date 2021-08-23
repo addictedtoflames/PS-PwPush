@@ -156,6 +156,11 @@ Function New-Password {
         [string]
         $PaddingSymbols = $Symbols,
 
+        # Generate the password as a secure string
+        [Parameter()]
+        [switch]
+        $AsSecureString,
+
         # How many passwords to generate
         [Parameter()]
         [int]
@@ -296,6 +301,10 @@ Function New-Password {
 
         #Add password to EntropyParams. We do this here because both string and word format passwords use this field
         $EntropyParams.Password = $SecurePassword
+
+        if ($AsSecureString){
+            $Password = $SecurePassword
+        }
 
         $Entropy = GetEntropy @EntropyParams
         $Output = [PSCustomObject]@{
