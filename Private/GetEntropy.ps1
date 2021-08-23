@@ -7,6 +7,7 @@
 # Import helper scripts
 . $PSScriptRoot/HelperFunctions.ps1
 . $PSScriptRoot/vars.ps1
+. $PSScriptRoot/SecureStringToPlainText.ps1
 
 Function GetEntropy{
     [CmdletBinding(DefaultParameterSetName = "Character")]
@@ -99,15 +100,9 @@ Function GetEntropy{
 
     # Unpack secure string to read password. If we are using Windows Powershell we need to use the BSTR method but this doesn't work on Linux
     # so for modern versions we use ConvertFrom-SecureString
-    if ($PSVersionTable.PSVersion.Major -lt 7){
-        $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
-        $PasswordPlain = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
-    }
-    else{
-        $PasswordPlain = ConvertFrom-SecureString $Password -AsPlainText
-    }
 
-    Write-Output $PasswordPlain
+    $PasswordPlain = SecureStringToPlainText -Password $Password
+
 
     if (StringContains -String $PasswordPlain -Characters $LowerCase){
         $CharacterSet += $LowerCase
@@ -126,7 +121,7 @@ Function GetEntropy{
 
     $BlindEntropy = [math]::round([math]::log($BlindPermutations,2))
 
-    # Remove plain password variable
+    # Remove plain password variable and garbage collect
     Remove-Variable -Name PasswordPlain
     [System.GC]::Collect()
 

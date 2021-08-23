@@ -4,6 +4,8 @@
  # license that can be found in the LICENSE file.
 #>
 
+. $PSScriptRoot/Private/SecureStringToPlainText.ps1
+
 Function Publish-Password {
 	<#
 	.SYNOPSIS
@@ -53,10 +55,9 @@ Function Publish-Password {
 	[CmdletBinding()]
 	Param(
 	    # Password to be sent
-	    [Parameter(mandatory, valuefrompipeline, valuefrompipelinebypropertyname = "Password")]
-	    [string]
+	    [Parameter(mandatory, ValueFromPipeline)]
 	    $Password,
-    
+
 	    # Days to retain link
 	    [ValidateRange(1,90)]
 	    [int16]
@@ -87,8 +88,27 @@ Function Publish-Password {
 	}
     
 	process {
+
+		# Check if password was recieved from New-Password and extract password property if it was
+		Write-Verbose "Checking if pipeline input is pscustomobject"
+		Write-Verbose "Password type is $($Password.GetType().Name)"
+
+		if ($Password.GetType().Name -eq "PSCustomObject") {
+			$Password = $Password.Password
+			Write-Verbose "Extracted password $Password from pipeline object"
+		}
+		
+		# Ideally password should be received as a secure string. If a String is received, print a warning and convert to secure string
+		if ($Password -isnot [SecureString]){
+			Write-Warning -Message "It is recommended to input the password as a secure string."
+			$SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
+		}
+		else {
+			$SecurePassword = $Password
+		}
+
 	    $Request = [PSCustomObject]@{
-		    payload = $Password
+		    payload = SecureStringToPlainText -Password $SecurePassword
 		    expire_after_days = $Days
 		    expire_after_views = $Views
 		    deletable_by_viewer = -not $DisableEarlyDeletion
@@ -105,7 +125,7 @@ Function Publish-Password {
 			$Link = $ResponseUri + $Response.url_token
 
 			$Summary = [PSCustomObject]@{
-				Password = $Password
+				Password = SecureStringToPlainText -Password $SecurePassword
 				Days     = $Days
 				Views    = $Views
 				Deletable = -not $DisableEarlyDeletion
