@@ -24,4 +24,8 @@ Describe -Name "New-Password" {
         $password = New-Password -Word
         $password.Password | Should -Be "PANAMA!swagger!NIBBLE!grudge"
     }
+    It "Character password length is correct" {
+        $password = New-Password -Character -Length 40
+        $password.Password.Length | Should -Be 40
+    }
 }
