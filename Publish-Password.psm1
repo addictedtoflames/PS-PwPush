@@ -4,7 +4,7 @@
  # license that can be found in the LICENSE file.
 #>
 
-. $PSScriptRoot/Private/SecureStringToPlainText.ps1
+. $PSScriptRoot/Private/HelperFunctions.ps1
 
 Function Publish-Password {
 	<#
@@ -78,7 +78,12 @@ Function Publish-Password {
 	    # Is user allowed to delete link early
 	    [Parameter()]
 	    [switch]
-	    $DisableEarlyDeletion
+	    $DisableEarlyDeletion,
+
+		# Do not show password in output. If set, SecureString object will be returned instead of cleartext password
+		[Parameter()]
+		[switch]
+		$HidePassword
 	)
 
 	begin {
@@ -107,16 +112,13 @@ Function Publish-Password {
 			$SecurePassword = $Password
 		}
 
-	    $Request = [PSCustomObject]@{
+	    $Response = Invoke-RestMethod -Method "Post" -Uri $URI -ContentType "application/json" -TimeoutSec 5 -Body ([PSCustomObject]@{
+				password = [PSCustomObject]@{
 		    payload = SecureStringToPlainText -Password $SecurePassword
 		    expire_after_days = $Days
 		    expire_after_views = $Views
 		    deletable_by_viewer = -not $DisableEarlyDeletion
-	    }
-
-	    $Response = Invoke-RestMethod -Method "Post" -Uri $URI -ContentType "application/json" -TimeoutSec 5 -Body ([PSCustomObject]@{
-				password = $Request
-			} | ConvertTo-Json ) 
+			}} | ConvertTo-Json ) 
 		   
 		
 		# If the request fails for any reason we won't get a response. In this case we shouldn't write out a summary
@@ -124,15 +126,13 @@ Function Publish-Password {
 
 			$Link = $ResponseUri + $Response.url_token
 
-			$Summary = [PSCustomObject]@{
-				Password = SecureStringToPlainText -Password $SecurePassword
+			return [PSCustomObject]@{
+				Password = if ($HidePassword) {$SecurePassword} else { SecureStringToPlainText -Password $SecurePassword }
 				Days     = $Days
 				Views    = $Views
 				Deletable = -not $DisableEarlyDeletion
 				Link     = $Link
 			}
-    
-			Write-Output $Summary
 		}
 	}
 	end {
