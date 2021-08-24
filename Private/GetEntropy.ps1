@@ -7,7 +7,6 @@
 # Import helper scripts
 . $PSScriptRoot/HelperFunctions.ps1
 . $PSScriptRoot/vars.ps1
-. $PSScriptRoot/SecureStringToPlainText.ps1
 
 Function GetEntropy{
     [CmdletBinding(DefaultParameterSetName = "Character")]
