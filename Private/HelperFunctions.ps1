@@ -54,3 +54,27 @@ function GenerateCharString {
 
     return $output
 }
+
+function SecureStringToPlainText {
+    <#
+    .SYNOPSIS
+        Convert secure string to plain text.
+    #>
+    [CmdletBinding()]
+    param (
+        # Password to convert
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [SecureString]
+        $Password
+    )
+    
+    process {
+        if ($PSVersionTable.PSVersion.Major -lt 7) {
+            return [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
+        }
+        else {
+            return ConvertFrom-SecureString $Password -AsPlainText
+        }
+    }
+    
+}
