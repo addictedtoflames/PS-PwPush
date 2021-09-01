@@ -202,6 +202,9 @@ Function New-Password {
         if ($WordlistLength -le 100){
             throw "Not enough available words, try setting less restrictive minimum and maximum lengths."
         }
+
+        # Deduplicate separator characters
+        $SeparatorCharacters = ([char[]]$SeparatorCharacters | Select-Object -Unique) -join ""
     }
 
     if ($PSCmdlet.ParameterSetName -eq "Character"){
