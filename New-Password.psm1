@@ -151,15 +151,15 @@ Function New-Password {
         [int]
         $SuffixSymbols = 0,
 
-        # Character set for padding symbols
+        # Character set for padding symbols. Provide the list of symbols as a string.
         [Parameter(ParameterSetName = "Word")]
         [string]
         $PaddingSymbols = $Symbols,
 
-        # Generate the password as a secure string
+        # Generate the password as a secure string. True by default if the output is piped to another cmdlet, false if run as a standalone cmdlet.
         [Parameter()]
         [switch]
-        $AsSecureString,
+        $AsSecureString = $(if ($PSCmdlet.MyInvocation.PipelineLength -gt 1){$true}else {$false}),
 
         # How many passwords to generate
         [Parameter()]
