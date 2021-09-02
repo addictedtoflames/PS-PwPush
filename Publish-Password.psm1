@@ -136,7 +136,7 @@ Function Publish-Password {
 		}
 	}
 	end {
-		Set-Clipboard -Value $Summary.Link
+		Set-Clipboard -Value $Link
 	}
 }
 
