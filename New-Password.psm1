@@ -134,7 +134,7 @@ Function New-Password {
         [int]
         $SuffixDigits = 0,
         
-        # String of characters to be used as separator character. One character in the string will be chosen at random.
+        # String of characters to be used as separator character. One character in the string will be chosen at random. Duplicate values will be removed prior to processing.
         [Parameter(ParameterSetName = "Word")]
         [string]
         $SeparatorCharacters = $Symbols,
@@ -151,7 +151,7 @@ Function New-Password {
         [int]
         $SuffixSymbols = 0,
 
-        # Character set for padding symbols. Provide the list of symbols as a string.
+        # Character set for padding symbols. Provide the list of symbols as a string. Duplicate values will be removed prior to processing.
         [Parameter(ParameterSetName = "Word")]
         [string]
         $PaddingSymbols = $Symbols,
@@ -204,7 +204,16 @@ Function New-Password {
         }
 
         # Deduplicate separator characters
-        $SeparatorCharacters = ([char[]]$SeparatorCharacters | Select-Object -Unique) -join ""
+        $DeduplicatedSeparatorCharacters = ([char[]]$SeparatorCharacters | Select-Object -Unique) -join ""
+        if ($SeparatorCharacters.Length -ne $DeduplicatedSeparatorCharacters.Length){
+            Write-Verbose "Duplicate separator characters found. Deduplicating."
+        }
+        
+        # Deduplicate padding symbols
+        $DeduplicatedPaddingSymbols = ([char[]]$PaddingSymbols | Select-Object -Unique) -join ""
+        if ($PaddingSymbols.Length -ne $DeduplicatedPaddingSymbols.Length){
+            Write-Verbose "Duplicate separator characters found. Deduplicating."
+        }
     }
 
     if ($PSCmdlet.ParameterSetName -eq "Character"){
@@ -245,7 +254,7 @@ Function New-Password {
 
             # Generate prefix symbols
             if ($PrefixSymbols -gt 0){
-                $PasswordWords += GenerateCharstring -Length $PrefixSymbols -Charset $Symbols
+                $PasswordWords += GenerateCharstring -Length $PrefixSymbols -Charset $DeduplicatedPaddingSymbols
             }
 
             # Generate prefix digits
@@ -270,15 +279,15 @@ Function New-Password {
 
             # Generate suffix symbols
             if ($SuffixSymbols -gt 0){
-                $PasswordWords += GenerateCharstring -Length $SuffixSymbols -Charset $Symbols
+                $PasswordWords += GenerateCharstring -Length $SuffixSymbols -Charset $DeduplicatedPaddingSymbols
             }
 
             # Choose separator character
-            if ($SeparatorCharacters.Length -gt 1) {
-                $SeparatorIndex = Get-Random -Minimum 0 -Maximum ($SeparatorCharacters.Length)
-                $SeparatorCharacter = $SeparatorCharacters[$SeparatorIndex]
+            if ($DeduplicatedSeparatorCharacters.Length -gt 1) {
+                $SeparatorIndex = Get-Random -Minimum 0 -Maximum ($DeduplicatedSeparatorCharacters.Length)
+                $SeparatorCharacter = $DeduplicatedSeparatorCharacters[$SeparatorIndex]
             }
-            else { $SeparatorCharacter = $SeparatorCharacters }
+            else { $SeparatorCharacter = $DeduplicatedSeparatorCharacters }
 
 
 
@@ -289,10 +298,10 @@ Function New-Password {
                 WordCount = $Words
                 PrefixSymbolCount = $PrefixSymbols
                 SuffixSymbolCount = $SuffixSymbols
-                SymbolSetSize = $PaddingSymbols.Length
+                SymbolSetSize = $DeduplicatedPaddingSymbols.Length
                 PrefixDigitCount = $PrefixDigits
                 SuffixDigitCount = $SuffixDigits
-                SeparatorCharacterCount = $SeparatorCharacters.length
+                SeparatorCharacterCount = $DeduplicatedSeparatorCharacters.length
             }
 
             $Password = $PasswordWords -join $SeparatorCharacter
