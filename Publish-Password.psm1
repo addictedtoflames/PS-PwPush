@@ -32,7 +32,7 @@ Function Publish-Password {
 		Deletable : False
 		Link      : https://pwpush.com/p/f3vg6lry95gj6n9n
 
-		This example creates a link for the password "password123", makes it available for 7 days or 5 views and prevents the user from deleting it early
+		This example creates a link for the password "password123", makes it available for 7 days or 5 views and prevents the user from deleting it early.
 	.EXAMPLE
 		PS> New-Password -Character -Length 32 | Publish-Password -Views 10
 
@@ -42,7 +42,7 @@ Function Publish-Password {
 		Deletable : True
 		Link      : https://pwpush.com/p/dd59wor2ipsnm7az
 
-		This example generates a random string and pipes it to PwPush with a view count of 10
+		This example generates a random string and pipes it to PwPush with a view count of 10.
 	.INPUTS
 		System.String
 	.OUTPUTS
@@ -54,20 +54,21 @@ Function Publish-Password {
 
 	[CmdletBinding()]
 	Param(
-	    # Password to be sent
+	    # Password to be sent.
 	    [Parameter(mandatory, ValueFromPipeline)]
 	    $Password,
 
-	    # Days to retain link
+	    # Days to retain link.
 	    [ValidateRange(1,90)]
 	    [int16]
 	    $Days = 7,
     
-	    # Views to retain link
+	    # Views to retain link.
 	    [ValidateRange(1,100)]
 	    [int16]
 	    $Views = 5,
 
+		# URI for PwPush API.
 	    [ValidateScript ({
 		    $UriStructure = [uri]$_
 		    $UriStructure.Scheme -eq "HTTPS"
@@ -75,15 +76,25 @@ Function Publish-Password {
 	    [string]
 	    $URI = 'https://pwpush.com/p.json',
 
-	    # Is user allowed to delete link early
+	    # Is user allowed to delete link early.
 	    [Parameter()]
 	    [switch]
 	    $DisableEarlyDeletion,
 
-		# Do not show password in output. If set, SecureString object will be returned instead of cleartext password
+		# Use 1-click retrieval step. Avoids URL scanners consuming a view.
 		[Parameter()]
 		[switch]
-		$HidePassword
+		$OneClickRetrieval,
+
+		# Do not show password in output. If set, SecureString object will be returned instead of cleartext password.
+		[Parameter()]
+		[switch]
+		$HidePassword,
+
+		# Copy link to clipboard. If called as part of a pipeline, only the last value will be copied
+		[Parameter()]
+		[switch]
+		$CopyToClipboard
 	)
 
 	begin {
@@ -125,6 +136,10 @@ Function Publish-Password {
 		if ($Response) {
 
 			$Link = $ResponseUri + $Response.url_token
+			
+			if ($OneClickRetrieval){
+				$Link += "/r"
+			}
 
 			return [PSCustomObject]@{
 				Password = if ($HidePassword) {$SecurePassword} else { SecureStringToPlainText -Password $SecurePassword }
@@ -136,7 +151,9 @@ Function Publish-Password {
 		}
 	}
 	end {
-		Set-Clipboard -Value $Link
+		if ($CopyToClipboard){
+			Set-Clipboard -Value $Link
+		}
 	}
 }
 
