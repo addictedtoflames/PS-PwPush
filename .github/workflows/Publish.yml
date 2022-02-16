@@ -19,8 +19,6 @@ jobs:
     - name: Update version number
       run: |
         Set-Location -Path /home/runner/work/PS-PwUtils/PS-PwUtils
-        Get-ChildItem
-        Get-Location
         [Version]$CurrentVersion = (Import-PowerShellDataFile "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1").ModuleVersion
         $NewVersion = "$($CurrentVersion.Major).$($CurrentVersion.Minor + 1)"
         Update-ModuleManifest -Path "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -ModuleVersion $NewVersion
@@ -35,7 +33,9 @@ jobs:
         # The token used to make requests to the GitHub API. It's NOT used to make commits and should not be changed.
         github_token: ${{ github.token }}
     - name: Import module
-      run: Import-Module "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -Force
+      run: |
+        Import-Module "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -Force
+        Get-Module
     - name: Test
       run: Invoke-Pester "/home/runner/work/PS-PwUtils/PS-PwUtils/Tests"
     - name: Publish to PowerShell Gallery
