@@ -19,23 +19,23 @@ jobs:
     - name: Update version number
       run: |
         Set-Location -Path /home/runner/work/PS-PwUtils/PS-PwUtils
-        [Version]$CurrentVersion = (Import-PowerShellDataFile Ps-PwUtils.psd1).ModuleVersion
+        [Version]$CurrentVersion = (Import-PowerShellDataFile "/home/runner/work/PS-PwUtils/PS-PwUtils/Ps-PwUtils.psd1").ModuleVersion
         $NewVersion = "$($CurrentVersion.Major).$($CurrentVersion.Minor + 1)"
-        Update-ModuleManifest -Path Ps-PwUtils.psd1 -ModuleVersion $NewVersion
+        Update-ModuleManifest -Path "/home/runner/work/PS-PwUtils/PS-PwUtils/Ps-PwUtils.psd1" -ModuleVersion $NewVersion
     - name: Check in new version number
       uses: EndBug/add-and-commit@v8.0.2
       with:
         # Arguments for the git add command
-        add: Ps-PwUtils.psd1
+        add: "/home/runner/work/PS-PwUtils/PS-PwUtils/Ps-PwUtils.psd1"
         # The name of the user that will be displayed as the author of the commit
         author_name: DeployBot
         message: CI Skip
         # The token used to make requests to the GitHub API. It's NOT used to make commits and should not be changed.
         github_token: ${{ github.token }}
     - name: Import module
-      run: Import-Module ./PS-PwUtils.psd1 -Force
+      run: Import-Module "/home/runner/work/PS-PwUtils/PS-PwUtils/Ps-PwUtils.psd1" -Force
     - name: Test
-      run: Invoke-Pester ./Tests/
+      run: Invoke-Pester "/home/runner/work/PS-PwUtils/PS-PwUtils/Tests"
     - name: Publish to PowerShell Gallery
       run: |
         Publish-Module -Name "/home/runner/work/PS-PwUtils/PS-PwUtils/Ps-PwUtils.psd1" -NugetApiKey ${{ secrets.API_KEY }}
