@@ -1,0 +1,41 @@
+name: Deploy to PowerShell Gallery
+
+on:
+  push:
+    branches: [ main ]
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Update version number
+      run: |
+        Set-Location -Path /home/runner/work/PS-PwUtils/PS-PwUtils
+        [Version]$CurrentVersion = (Import-PowerShellDataFile "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1").ModuleVersion
+        $NewVersion = "$($CurrentVersion.Major).$($CurrentVersion.Minor + 1)"
+        Update-ModuleManifest -Path "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -ModuleVersion $NewVersion
+    - name: Check in new version number
+      uses: EndBug/add-and-commit@v8.0.2
+      with:
+        # Arguments for the git add command
+        add: "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1"
+        # The name of the user that will be displayed as the author of the commit
+        author_name: DeployBot/home/runner/work/PS-PwUtils/PS-PwUtils
+        message: CI Skip
+        # The token used to make requests to the GitHub API. It's NOT used to make commits and should not be changed.
+        github_token: ${{ github.token }}
+    - name: Import module and test
+      run: |
+        Import-Module "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -Force
+        Invoke-Pester "/home/runner/work/PS-PwUtils/PS-PwUtils/Tests"
+    - name: Publish to PowerShell Gallery
+      run: |
+        Publish-Module -Name "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -NugetApiKey ${{ secrets.API_KEY }}
