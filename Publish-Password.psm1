@@ -54,32 +54,32 @@ Function Publish-Password {
 
 	[CmdletBinding()]
 	Param(
-	    # Password to be sent.
-	    [Parameter(mandatory, ValueFromPipeline)]
-	    $Password,
+		# Password to be sent.
+		[Parameter(mandatory, ValueFromPipeline)]
+		$Password,
 
-	    # Days to retain link.
-	    [ValidateRange(1,90)]
-	    [int16]
-	    $Days = 7,
+		# Days to retain link.
+		[ValidateRange(1, 90)]
+		[int16]
+		$Days = 7,
     
-	    # Views to retain link.
-	    [ValidateRange(1,100)]
-	    [int16]
-	    $Views = 5,
+		# Views to retain link.
+		[ValidateRange(1, 100)]
+		[int16]
+		$Views = 5,
 
 		# URI for PwPush API.
-	    [ValidateScript ({
-		    $UriStructure = [uri]$_
-		    $UriStructure.Scheme -eq "HTTPS"
-	    })]
-	    [string]
-	    $URI = 'https://pwpush.com/p.json',
+		[ValidateScript ({
+				$UriStructure = [uri]$_
+				$UriStructure.Scheme -eq "HTTPS"
+			})]
+		[string]
+		$URI = 'https://pwpush.com/p.json',
 
-	    # Is user allowed to delete link early.
-	    [Parameter()]
-	    [switch]
-	    $DisableEarlyDeletion,
+		# Is user allowed to delete link early.
+		[Parameter()]
+		[switch]
+		$DisableEarlyDeletion,
 
 		# Use 1-click retrieval step. Avoids URL scanners consuming a view.
 		[Parameter()]
@@ -94,13 +94,18 @@ Function Publish-Password {
 		# Copy link to clipboard. If called as part of a pipeline, only the last value will be copied
 		[Parameter()]
 		[switch]
-		$CopyToClipboard
+		$CopyToClipboard,
+
+		# Number of retries if connection fails. Default = 5
+		[Parameter()]
+		[int]
+		$MaxRetries
 	)
 
 	begin {
 		# Response URI ends in /p instead of /p.json so we prepare this in advance to avoid recalculating for every pipeline object
 		# We convert to a [uri] object to ensure URI is in simplest form (i.e. implicit port numbers are removed)
-		$ResponseUri = (([uri]$URI).AbsoluteUri -replace '.json$','/')
+		$ResponseUri = (([uri]$URI).AbsoluteUri -replace '.json$', '/')
 	}
     
 	process {
@@ -115,7 +120,7 @@ Function Publish-Password {
 		}
 		
 		# Ideally password should be received as a secure string. If a String is received, print a warning and convert to secure string
-		if ($Password -isnot [SecureString]){
+		if ($Password -isnot [SecureString]) {
 			Write-Warning -Message "It is recommended to input the password as a secure string."
 			$SecurePassword = ConvertTo-SecureString -String $Password -AsPlainText -Force
 		}
@@ -123,13 +128,27 @@ Function Publish-Password {
 			$SecurePassword = $Password
 		}
 
-	    $Response = Invoke-RestMethod -Method "Post" -Uri $URI -ContentType "application/json" -TimeoutSec 5 -Body ([PSCustomObject]@{
-				password = [PSCustomObject]@{
-		    payload = SecureStringToPlainText -Password $SecurePassword
-		    expire_after_days = $Days
-		    expire_after_views = $Views
-		    deletable_by_viewer = -not $DisableEarlyDeletion
-			}} | ConvertTo-Json ) 
+		$attempts = 0
+		$Response
+		do {
+			$attempts ++
+			try {
+				$Response = Invoke-RestMethod -Method "Post" -Uri $URI -ContentType "application/json" -TimeoutSec 5 -Body ([PSCustomObject]@{
+						password = [PSCustomObject]@{
+							payload             = SecureStringToPlainText -Password $SecurePassword
+							expire_after_days   = $Days
+							expire_after_views  = $Views
+							deletable_by_viewer = -not $DisableEarlyDeletion
+						}
+					} | ConvertTo-Json ) 
+			   
+			}
+
+			catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+				Start-Sleep -Seconds 2
+			}
+			
+		} while ($attempts -le $MaxRetries)
 		   
 		
 		# If the request fails for any reason we won't get a response. In this case we shouldn't write out a summary
@@ -137,21 +156,21 @@ Function Publish-Password {
 
 			$Link = $ResponseUri + $Response.url_token
 			
-			if ($OneClickRetrieval){
+			if ($OneClickRetrieval) {
 				$Link += "/r"
 			}
 
 			return [PSCustomObject]@{
-				Password = if ($HidePassword) {$SecurePassword} else { SecureStringToPlainText -Password $SecurePassword }
-				Days     = $Days
-				Views    = $Views
+				Password  = if ($HidePassword) { $SecurePassword } else { SecureStringToPlainText -Password $SecurePassword }
+				Days      = $Days
+				Views     = $Views
 				Deletable = -not $DisableEarlyDeletion
-				Link     = $Link
+				Link      = $Link
 			}
 		}
 	}
 	end {
-		if ($CopyToClipboard){
+		if ($CopyToClipboard) {
 			Set-Clipboard -Value $Link
 		}
 	}
