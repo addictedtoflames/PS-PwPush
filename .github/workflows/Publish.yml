@@ -36,6 +36,7 @@ jobs:
       run: |
         Import-Module "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -Force
         Get-Module PS-PwUtils | select *
+        New-Password
     - name: Test
       run: Invoke-Pester "/home/runner/work/PS-PwUtils/PS-PwUtils/Tests"
     - name: Publish to PowerShell Gallery
