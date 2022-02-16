@@ -129,7 +129,7 @@ Function Publish-Password {
 		}
 
 		$attempts = 0
-		$Response
+		$Response = New-Object -TypeName pscustomobject
 		do {
 			$attempts ++
 			try {
@@ -141,10 +141,11 @@ Function Publish-Password {
 							deletable_by_viewer = -not $DisableEarlyDeletion
 						}
 					} | ConvertTo-Json ) 
-			   
+
 			}
 
-			catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+			catch  {
+				Write-Verbose -Message "Connection failed. Trying again in 2 seconds"
 				Start-Sleep -Seconds 2
 			}
 			
