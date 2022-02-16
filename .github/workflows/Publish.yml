@@ -28,14 +28,14 @@ jobs:
         # Arguments for the git add command
         add: "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1"
         # The name of the user that will be displayed as the author of the commit
-        author_name: DeployBot
+        author_name: DeployBot/home/runner/work/PS-PwUtils/PS-PwUtils
         message: CI Skip
         # The token used to make requests to the GitHub API. It's NOT used to make commits and should not be changed.
         github_token: ${{ github.token }}
     - name: Import module
       run: |
         Import-Module "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -Force
-        Get-Module
+        Get-Module PS-PwUtils | select *
     - name: Test
       run: Invoke-Pester "/home/runner/work/PS-PwUtils/PS-PwUtils/Tests"
     - name: Publish to PowerShell Gallery
