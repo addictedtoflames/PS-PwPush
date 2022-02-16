@@ -19,6 +19,8 @@ jobs:
     - name: Update version number
       run: |
         Set-Location -Path /home/runner/work/PS-PwUtils/PS-PwUtils
+        Get-ChildItem
+        Get-Location
         [Version]$CurrentVersion = (Import-PowerShellDataFile "/home/runner/work/PS-PwUtils/PS-PwUtils/Ps-PwUtils.psd1").ModuleVersion
         $NewVersion = "$($CurrentVersion.Major).$($CurrentVersion.Minor + 1)"
         Update-ModuleManifest -Path "/home/runner/work/PS-PwUtils/PS-PwUtils/Ps-PwUtils.psd1" -ModuleVersion $NewVersion
