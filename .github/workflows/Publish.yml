@@ -32,13 +32,10 @@ jobs:
         message: CI Skip
         # The token used to make requests to the GitHub API. It's NOT used to make commits and should not be changed.
         github_token: ${{ github.token }}
-    - name: Import module
+    - name: Import module and test
       run: |
         Import-Module "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -Force
-        Get-Module PS-PwUtils | select *
-        New-Password
-    - name: Test
-      run: Invoke-Pester "/home/runner/work/PS-PwUtils/PS-PwUtils/Tests"
+        Invoke-Pester "/home/runner/work/PS-PwUtils/PS-PwUtils/Tests"
     - name: Publish to PowerShell Gallery
       run: |
         Publish-Module -Name "/home/runner/work/PS-PwUtils/PS-PwUtils/PS-PwUtils.psd1" -NugetApiKey ${{ secrets.API_KEY }}
