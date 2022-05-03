@@ -123,6 +123,7 @@ Function Publish-Password {
 			$SecurePassword = $Password
 		}
 
+		try {
 	    $Response = Invoke-RestMethod -Method "Post" -Uri $URI -ContentType "application/json" -TimeoutSec 5 -Body ([PSCustomObject]@{
 				password = [PSCustomObject]@{
 		    payload = SecureStringToPlainText -Password $SecurePassword
@@ -130,6 +131,12 @@ Function Publish-Password {
 		    expire_after_views = $Views
 		    deletable_by_viewer = -not $DisableEarlyDeletion
 			}} | ConvertTo-Json ) 
+		}
+
+		catch [System.Net.WebException] {
+			Clear-Variable -Name Response
+			Write-Error -Message "Failed to publish password, skipping"
+		}
 		   
 		
 		# If the request fails for any reason we won't get a response. In this case we shouldn't write out a summary
@@ -149,6 +156,7 @@ Function Publish-Password {
 				Link     = $Link
 			}
 		}
+
 	}
 	end {
 		if ($CopyToClipboard){
