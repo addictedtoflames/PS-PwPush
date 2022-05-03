@@ -62,4 +62,4 @@ To keep the README short, only a summary of the available commands is given. All
 
 # Credit
 
-Wordlist: http://www.mieliestronk.com/wordlist.html
+Wordlist: https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
