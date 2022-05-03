@@ -99,7 +99,7 @@ Function Publish-Password {
 		# Number of retries if connection fails. Default = 5
 		[Parameter()]
 		[int]
-		$MaxRetries
+		$MaxRetries = 5
 	)
 
 	begin {
@@ -133,6 +133,7 @@ Function Publish-Password {
 		do {
 			$attempts ++
 			try {
+				Write-Verbose "Attempt $attempts of $MaxRetries"
 				$Response = Invoke-RestMethod -Method "Post" -Uri $URI -ContentType "application/json" -TimeoutSec 5 -Body ([PSCustomObject]@{
 						password = [PSCustomObject]@{
 							payload             = SecureStringToPlainText -Password $SecurePassword
@@ -145,15 +146,15 @@ Function Publish-Password {
 			}
 
 			catch  {
-				Write-Verbose -Message "Connection failed. Trying again in 2 seconds"
-				Start-Sleep -Seconds 2
+				Write-Verbose -Message "Connection failed."
+				Start-Sleep -Seconds 0.5
 			}
 			
-		} while ($attempts -le $MaxRetries)
+		} while ($attempts -lt $MaxRetries -and !$Response.url_token)
 		   
 		
 		# If the request fails for any reason we won't get a response. In this case we shouldn't write out a summary
-		if ($Response) {
+		if ($Response.url_token) {
 
 			$Link = $ResponseUri + $Response.url_token
 			
@@ -168,6 +169,8 @@ Function Publish-Password {
 				Deletable = -not $DisableEarlyDeletion
 				Link      = $Link
 			}
+		} else {
+			Write-Error -Message "Failed to connect to host after $MaxRetries attempts. Skipping"
 		}
 
 	}
