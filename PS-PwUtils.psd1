@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.7'
+ModuleVersion = '1.8'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -99,7 +99,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Password', 'Security', 'PwPush', 'PasswordGenerator')
+        Tags = 'Password','Security','PwPush','PasswordGenerator'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/davidshomelab/PS-PwUtils/blob/main/LICENSE'
